@@ -88,3 +88,49 @@ func TestHelloTable(t *testing.T) {
 
 	fmt.Println("TestHelloTable done")
 }
+
+func BenchmarkHello(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Hello("Teza")
+	}
+}
+
+func BenchmarkHelloSub(b *testing.B) {
+	b.Run("Teza", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			Hello("Teza")
+		}
+	})
+	b.Run("Eko", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			Hello("Eko")
+		}
+	})
+}
+
+func BenchmarkHelloTable(b *testing.B) {
+	tests := []struct {
+		name     string
+		request  string
+		expected string
+	}{
+		{
+			name:     "Hello('TEZA')",
+			request:  "TEZA",
+			expected: "Hello TEZA",
+		},
+		{
+			name:     "Hello('EKO')",
+			request:  "EKO",
+			expected: "Hello EKO",
+		},
+	}
+
+	for _, test := range tests {
+		b.Run(test.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				Hello(test.request)
+			}
+		})
+	}
+}
